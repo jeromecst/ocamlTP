@@ -1,7 +1,8 @@
 (* Coquisart Jérôme 
   Groupe : Groupe 1 *)
 
-open Printf
+open Printf;;
+Random.self_init ();;
 type couleur = Pique | Carreau | Coeur | Trefle
 type valeur = Roi | Reine | Valet | Nombre of int
 (* avec Nombre n tel que 1 ≤ n ≤ 10  *)
@@ -60,7 +61,6 @@ let est_couleur c1 c2 c3 =
 
 
 let tirage_valeur () = 
-        Random.self_init ();
         let rd = (Random.int 13) + 1 in
         match rd with
         | 13 -> Roi
@@ -69,7 +69,6 @@ let tirage_valeur () =
         | i -> Nombre(i);;
 
 let tirage_couleur () =
-        Random.self_init ();
         let rd = (Random.int 4) + 1 in
         match rd with
         | 1 -> Pique
@@ -122,27 +121,23 @@ let rec affiche_liste liste_carte =
 
 let play carte_list_1 carte_list_2= 
         let rec play carte_list_1 carte_list_2 main =
-                let message () = match main with 
-                | true -> printf "vvvvvvvvvvv Joueur 1 à la main vvvvvvvvvvv\n"
-                | false -> printf "vvvvvvvvvvv Joueur 2 à la main vvvvvvvvvvv\n" in
-                message ();
                 let winJ1 c1 c2 =
                         affiche_liste carte_list_1 ;
                         affiche_liste carte_list_2 ;
-                        printf "^^^^^^^^^^^ Joueur 1 remporte la manche ^^^^^^^^^^^\n\n";
                         let carte_list_1 = add_liste (List.tl carte_list_1) c1 in
                         let carte_list_1 = add_liste carte_list_1 c2 in
                         let carte_list_2 = List.tl carte_list_2 in
+                        printf "^^^^^^^^^^^ Joueur 1 remporte la manche ^^^^^^^^^^^\n\n";
                         play carte_list_1 carte_list_2 (not main)
                 in
 
                 let winJ2 c1 c2 = 
                         affiche_liste carte_list_1 ;
                         affiche_liste carte_list_2 ;
-                        printf "^^^^^^^^^^^ Joueur 2 remporte la manche ^^^^^^^^^^^\n\n";
                         let carte_list_1 = List.tl carte_list_1 in
-                        let carte_list_2 = add_liste (List.tl carte_list_2) c1 in
-                        let carte_list_2 = add_liste carte_list_2 c2 in
+                        let carte_list_2 = add_liste (List.tl carte_list_2) c2 in
+                        let carte_list_2 = add_liste carte_list_2 c1 in
+                        printf "^^^^^^^^^^^ Joueur 2 remporte la manche ^^^^^^^^^^^\n\n";
                         play carte_list_1 carte_list_2 (not main)
                 in      
 
@@ -153,13 +148,11 @@ let play carte_list_1 carte_list_2=
                         if length carte_list_2 = 0 then printf "Joueur 1 gagner la partie\n" else  (
                                 let c1 = tirage_carte carte_list_1 in
                                 let c2 = tirage_carte carte_list_2 in
-                                printf "Carte joueur 1 : " ; affiche_carte c1;
-                                printf "Carte joueur 2 : " ; affiche_carte c2;
                                 match meilleure_carte c1 c2 with
                                 | Joueur1 -> 
-                                                winJ1 c1 c2
+                                                if Random.bool () then winJ1 c1 c2 else winJ1 c2 c1
                                 | Joueur2 ->
-                                                winJ2 c1 c2
+                                                if Random.bool () then winJ2 c1 c2 else winJ2 c2 c1
                                 | Tie ->
                                                 if main then winJ1 c1 c2 else winJ2 c1 c2
                         )
@@ -261,20 +254,15 @@ let play_bataille carte_list_1 carte_list_2=
 
                 if length carte_list_1 = 0 then printf "Joueur 2 gagne la partie\n" else (
                         if length carte_list_2 = 0 then printf "Joueur 1 gagner la partie\n" else  (
+                                printf "len tot = %d \n" ((length carte_list_1) + (length carte_list_2));
                                 let c1 = tirage_carte carte_list_1 in
                                 let c2 = tirage_carte carte_list_2 in
                                 match meilleure_carte c1 c2 with
                                 | Joueur1 -> 
-                                                printf "Carte joueur 1 : " ; affiche_carte c1; printf "\n\n";
-                                                printf "Carte joueur 2 : " ; affiche_carte c2; printf "\n\n";
-                                                winJ1 c1 c2 tas
+                                                if Random.bool () then winJ1 c1 c2 tas else winJ1 c2 c1 tas
                                 | Joueur2 ->
-                                                printf "Carte joueur 1 : " ; affiche_carte c1; printf "\n\n";
-                                                printf "Carte joueur 2 : " ; affiche_carte c2; printf "\n\n";
-                                                winJ2 c1 c2 tas
+                                                if Random.bool () then winJ2 c1 c2 tas else winJ2 c2 c1 tas
                                 | Tie ->
-                                                printf "Carte joueur 1 : " ; affiche_carte c1; printf "\n\n";
-                                                printf "Carte joueur 2 : " ; affiche_carte c2; printf "\n\n";
                                                 printf "\n\n\ ----------------------------BATAILLE ----------------------------\n\n";
                                                 let tas = c1::c2::tas in
                                                 let carte_list_1 = List.tl carte_list_1 in
@@ -344,7 +332,7 @@ let tests () =
         printf "%b " ((meilleure_carte c9  c10) = Joueur2) ;
 
 
-        let (l1, l2) = tirage_pile 7 in
+        let (l1, l2) = tirage_pile 52 in
         printf "test tirage pile :\n";
         printf "l1 :\n";
         affiche_liste l1;
@@ -359,9 +347,7 @@ let tests () =
 
 (*tests () ;;*)
 
-
 let (l1, l2) = tirage_pile 52 in
 
 printf "\n\n\ ----------------------------BEGIN PLAY BATAILLE ----------------------------\n\n";
 play_bataille l1 l2 ;
-

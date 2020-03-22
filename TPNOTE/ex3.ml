@@ -148,9 +148,9 @@ printf "begin tests find_sol\n";;
 test_find_sol [Head; Head; Head; Head];;
 test_find_sol [Head; Tails; Head; Tails];;
 test_find_sol [Tails; Head; Tails; Head];;
-
 test_find_sol [Head; Head; Tails; Tails];;
 test_find_sol [Head; Tails; Tails; Head];;
 test_find_sol [Tails; Tails; Head; Head];;
 test_find_sol [Tails; Head; Head; Tails];;
 test_find_sol [Tails; Tails; Tails; Tails];;
+
